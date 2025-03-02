@@ -1,0 +1,1 @@
+# sonartrivyslack-jenkinsfile
