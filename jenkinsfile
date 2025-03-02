@@ -69,7 +69,7 @@ pipeline {
 }
 def slackNotification(stageName) {
             slackSend channel: 'jenkins', 
-              message: "slack integration was successful", 
+              message: "Stage: ${stageName} - Slack integration was successful", 
               tokenCredentialId: 'SLACK_SECRET',
               username: 'bot'
     
