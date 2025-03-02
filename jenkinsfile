@@ -18,7 +18,7 @@ pipeline {
                     echo "source code analysis"
                     sh '''
                         /home/ubuntu/myenv/bin/pysonar-scanner \
-                        -Dsonar.projectKey=myproject \
+                        -Dsonar.projectKey=newproject \
                         -Dsonar.sources=. \
                         -Dsonar.host.url=http://18.212.178.21:9000 \
                         -Dsonar.login=$AUTHENTICATION_TOKEN
