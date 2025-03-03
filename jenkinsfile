@@ -70,7 +70,7 @@ pipeline {
 def slackNotification(stageName) {
     slackSend(
         channel: '#cicd', 
-        message: "Stage: ${stageName} - Slack integration was successful", 
+        message: "Stage '${stageName}' completed",  
         tokenCredentialId: 'SLACK_SECRET',
         username: 'bot'
     )
