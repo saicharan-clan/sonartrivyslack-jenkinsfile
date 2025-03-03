@@ -7,6 +7,9 @@ pipeline {
     stages {
         stage('checkout') {
             steps {
+                script {
+                    slackNotification('Checkout')
+                }
                 echo 'git clone'
                 git branch: 'main', url: 'https://github.com/saicharan-clan/django-notes-app.git'
             }
@@ -14,6 +17,9 @@ pipeline {
         
         stage('source code scanning'){
             steps{
+                script {
+                    slackNotification('Source Code Scanning')
+                }
                 withCredentials([string(credentialsId: 'SONAR_AUTH_TOKEN', variable: 'AUTHENTICATION_TOKEN')]) {
                     echo "source code analysis"
                     sh '''
@@ -29,20 +35,29 @@ pipeline {
         
         stage('build'){
             steps{
+                script {
+                    slackNotification('Build')
+                }
                 echo "building docker image"
-                sh 'docker build -t django:v09 .'
+                sh 'docker build -t django:v07 .'
             }
         }
         
         stage('scanning container image'){
             steps{
+                 script {
+                    slackNotification('Scanning Container Image')
+                }
                 echo "scanning docker image"
-                sh 'trivy image --format table django:v09'
+                sh 'trivy image --format table django:v07'
             }
         }
         
         stage('dockerhub_login'){
             steps{
+                script {
+                    slackNotification('DockerHub Login')
+                }
                 withCredentials([usernamePassword(credentialsId: 'DOCKERHUB_CRED', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
                     echo "dockerhublogin"
                     sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
@@ -53,14 +68,20 @@ pipeline {
         
         stage('docker push'){
             steps{
+                script {
+                    slackNotification('Docker Push')
+                }
                 echo "docker push"
-                sh "docker tag django:v09 saicharan09/django:v09"
-                sh "docker push saicharan09/django:v09"
+                sh "docker tag django:v07 saicharan09/django:v07"
+                sh "docker push saicharan09/django:v07"
             }
         }
         
         stage('Deploy with Docker Compose') {
             steps {
+                script {
+                    slackNotification('Deploy with Docker Compose')
+                }
                 sh "docker-compose down && docker-compose up -d --build"
             }
         }
@@ -70,7 +91,7 @@ pipeline {
 def slackNotification(stageName) {
     slackSend(
         channel: '#cicd', 
-        message: "Stage '${stageName}' completed",  
+        message:  "Stage '${stageName}' completed", 
         tokenCredentialId: 'SLACK_SECRET',
         username: 'bot'
     )
