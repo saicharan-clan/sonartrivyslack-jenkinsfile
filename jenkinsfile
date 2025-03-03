@@ -20,7 +20,7 @@ pipeline {
                         /home/ubuntu/myenv/bin/pysonar-scanner \
                         -Dsonar.projectKey=newproject \
                         -Dsonar.sources=. \
-                        -Dsonar.host.url=http://18.212.178.21:9000 \
+                        -Dsonar.host.url=http://3.239.115.237:9000 \
                         -Dsonar.login=$AUTHENTICATION_TOKEN
                     '''
                 }
@@ -30,14 +30,14 @@ pipeline {
         stage('build'){
             steps{
                 echo "building docker image"
-                sh 'docker build -t django:v21 .'
+                sh 'docker build -t django:v09 .'
             }
         }
         
         stage('scanning container image'){
             steps{
                 echo "scanning docker image"
-                sh 'trivy image --format table django:v21'
+                sh 'trivy image --format table django:v09'
             }
         }
         
@@ -54,8 +54,8 @@ pipeline {
         stage('docker push'){
             steps{
                 echo "docker push"
-                sh "docker tag django:v21 saicharan09/django:v21"
-                sh "docker push saicharan09/django:v21"
+                sh "docker tag django:v09 saicharan09/django:v09"
+                sh "docker push saicharan09/django:v09"
             }
         }
         
@@ -68,9 +68,10 @@ pipeline {
     }
 }
 def slackNotification(stageName) {
-            slackSend channel: 'jenkins', 
-              message: "Stage: ${stageName} - Slack integration was successful", 
-              tokenCredentialId: 'SLACK_SECRET',
-              username: 'bot'
-    
+    slackSend(
+        channel: '#cicd', 
+        message: "Stage: ${stageName} - Slack integration was successful", 
+        tokenCredentialId: 'SLACK_SECRET',
+        username: 'bot'
+    )
 }
